@@ -2,6 +2,27 @@
 
 import React from "react";
 
+/**
+ * HomePage is a functional React component that renders the main layout of the Arabic App.
+ *
+ * Features:
+ * - A vertically centered structure using flexbox to manage the overall layout.
+ * - A styled header displaying the title "Arabic App".
+ * - A grid of 28 interactive squares displayed in a 7-column by 3-row layout.
+ *   Each square changes background color when hovered and reverts when the mouse moves away.
+ * - A footer section containing three interactive buttons to represent navigation pages.
+ *   Buttons change their background color on hover and revert to the original color on mouse out.
+ *
+ * Styling:
+ * - The component includes inline styles for layout and design, including responsiveness
+ *   for proper alignment and spacing of elements.
+ *
+ *   TODO
+ *    * Put arabic letters in boxes
+ *    * Clean up spacing/Style
+ *    *Implement functional buttons
+ *
+ */
 const HomePage: React.FC = () => {
     return (
         <div
