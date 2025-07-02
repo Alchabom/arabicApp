@@ -1,18 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 
-interface Letter {
-  id: number;
-  letter: string;
-  name: string;
-  transliteration?: string;
-  audioUrl?: string;
-}
+import { NextResponse } from 'next/server';
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Letter[]>
-) {
-const lettersData: Letter[] = [
+export async function GET() {
+  const lettersData = [
     { id: 1, letter: "أ", name: "'alif", transliteration: "a", audioUrl: "/audio/alif.mp3" },
     { id: 2, letter: "ب", name: "Bā'", transliteration: "b", audioUrl: "/audio/ba.mp3" },
     { id: 3, letter: "ت", name: "Tā'", transliteration: "t", audioUrl: ""},
@@ -44,5 +34,7 @@ const lettersData: Letter[] = [
     { id: 29, letter: "ء", name: "Hamza", transliteration: "'", audioUrl: ""}
    
   ];
-res.status(200).json(lettersData);
+
+
+  return NextResponse.json(lettersData);
 }
