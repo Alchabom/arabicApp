@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 interface Letter {
     id: number;
@@ -7,6 +7,18 @@ interface Letter {
     name: string;
     transliteration?: string;
     audioUrl?: string;
+    forms?: {
+        isolated: string;
+        initial: string;
+        medial: string;
+        final: string;
+    };
+    formTransliterations?: {
+        isolated: string;
+        initial: string;
+        medial: string;
+        final: string;
+    };
 }
 
 interface LetterModalProps {
@@ -45,6 +57,44 @@ const modalStyles: { [key: string]: React.CSSProperties } = {
         margin: "8px 0",
         color: "#555",
     },
+    formsContainer: {
+        display: "flex",
+        justifyContent: "space-around",
+        margin: "20px 0",
+        padding: "15px",
+        backgroundColor: "#f8f9fa",
+        borderRadius: "8px",
+    },
+    formItem: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+    },
+    formLetter: {
+        fontSize: "2.5rem",
+        fontWeight: "bold",
+        color: "#333",
+        margin: "5px 0",
+    },
+    formLabel: {
+        fontSize: "0.9rem",
+        color: "#666",
+    },
+    transliterationText: {
+        fontSize: "0.8rem",
+        color: "#666",
+        margin: "5px 0",
+        textAlign: "center",
+    },
+    transliterationInput: {
+        width: "60px",
+        fontSize: "0.8rem",
+        padding: "4px",
+        margin: "5px 0",
+        textAlign: "center",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+    },
     audioButton: {
         padding: "10px 20px",
         margin: "15px 5px 10px 5px",
@@ -72,6 +122,14 @@ const modalStyles: { [key: string]: React.CSSProperties } = {
 const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => {
     if (!letter) return null;
 
+    // Use the formTransliterations provided by the server, or fallback to empty strings
+    const transliterations = letter.formTransliterations || {
+        isolated: "",
+        initial: "",
+        medial: "",
+        final: ""
+    };
+
     const playAudio = () => {
         if (letter.audioUrl) {
             const audio = new Audio(letter.audioUrl);
@@ -89,6 +147,40 @@ const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => {
                         Transliteration: {letter.transliteration}
                     </div>
                 )}
+
+                {letter.forms && (
+                    <div style={modalStyles.formsContainer}>
+                        <div style={modalStyles.formItem}>
+                            <div style={modalStyles.formLetter}>{letter.forms.isolated}</div>
+                            <div style={modalStyles.transliterationText}>
+                                {transliterations.isolated || "_____"}
+                            </div>
+                            <div style={modalStyles.formLabel}>Isolated</div>
+                        </div>
+                        <div style={modalStyles.formItem}>
+                            <div style={modalStyles.formLetter}>{letter.forms.initial}</div>
+                            <div style={modalStyles.transliterationText}>
+                                {transliterations.initial || "_____"}
+                            </div>
+                            <div style={modalStyles.formLabel}>Initial</div>
+                        </div>
+                        <div style={modalStyles.formItem}>
+                            <div style={modalStyles.formLetter}>{letter.forms.medial}</div>
+                            <div style={modalStyles.transliterationText}>
+                                {transliterations.medial || "_____"}
+                            </div>
+                            <div style={modalStyles.formLabel}>Medial</div>
+                        </div>
+                        <div style={modalStyles.formItem}>
+                            <div style={modalStyles.formLetter}>{letter.forms.final}</div>
+                            <div style={modalStyles.transliterationText}>
+                                {transliterations.final || "_____"}
+                            </div>
+                            <div style={modalStyles.formLabel}>Final</div>
+                        </div>
+                    </div>
+                )}
+
                 {letter.audioUrl && (
                     <button onClick={playAudio} style={modalStyles.audioButton}>
                         Play Sound

@@ -10,6 +10,18 @@ interface Letter {
   name: string;
   transliteration?: string;
   audioUrl?: string;
+  forms?: {
+    isolated: string;
+    initial: string;
+    medial: string;
+    final: string;
+  };
+  formTransliterations?: {
+    isolated: string;
+    initial: string;
+    medial: string;
+    final: string;
+  };
 }
 
 // Group styles together for better readability
@@ -207,6 +219,3 @@ const HomePage: React.FC = () => {
 
 
 export default HomePage;
-
-
-
