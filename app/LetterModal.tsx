@@ -13,11 +13,12 @@ interface Letter {
         medial: string;
         final: string;
     };
-    formTransliterations?: {
-        isolated: string;
-        initial: string;
-        medial: string;
-        final: string;
+
+    formAudioUrls?: {
+        isolated?: string;
+        initial?: string;
+        medial?: string;
+        final?: string;
     };
 }
 
@@ -122,17 +123,12 @@ const modalStyles: { [key: string]: React.CSSProperties } = {
 const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => {
     if (!letter) return null;
 
-    // Use the formTransliterations provided by the server, or fallback to empty strings
-    const transliterations = letter.formTransliterations || {
-        isolated: "",
-        initial: "",
-        medial: "",
-        final: ""
-    };
 
-    const playAudio = () => {
-        if (letter.audioUrl) {
-            const audio = new Audio(letter.audioUrl);
+
+    const playAudio = (audioUrl?: string) => {
+        if (audioUrl) {
+            // Audio files are in the public directory and accessed directly
+            const audio = new Audio(audioUrl);
             audio.play().catch((e) => console.error("Error playing audio:", e));
         }
     };
@@ -152,37 +148,77 @@ const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => {
                     <div style={modalStyles.formsContainer}>
                         <div style={modalStyles.formItem}>
                             <div style={modalStyles.formLetter}>{letter.forms.isolated}</div>
-                            <div style={modalStyles.transliterationText}>
-                                {transliterations.isolated || "_____"}
-                            </div>
                             <div style={modalStyles.formLabel}>Isolated</div>
+                            {letter.formAudioUrls?.isolated && (
+                                <button 
+                                    onClick={() => playAudio(letter.formAudioUrls!.isolated!)}
+                                    style={{
+                                        ...modalStyles.audioButton,
+                                        padding: '5px 10px',
+                                        fontSize: '0.8rem',
+                                        margin: '5px 0'
+                                    }}
+                                >
+                                    Play
+                                </button>
+                            )}
                         </div>
                         <div style={modalStyles.formItem}>
                             <div style={modalStyles.formLetter}>{letter.forms.initial}</div>
-                            <div style={modalStyles.transliterationText}>
-                                {transliterations.initial || "_____"}
-                            </div>
                             <div style={modalStyles.formLabel}>Initial</div>
+                            {letter.formAudioUrls?.initial && (
+                                <button 
+                                    onClick={() => playAudio(letter.formAudioUrls!.initial!)}
+                                    style={{
+                                        ...modalStyles.audioButton,
+                                        padding: '5px 10px',
+                                        fontSize: '0.8rem',
+                                        margin: '5px 0'
+                                    }}
+                                >
+                                    Play
+                                </button>
+                            )}
                         </div>
                         <div style={modalStyles.formItem}>
                             <div style={modalStyles.formLetter}>{letter.forms.medial}</div>
-                            <div style={modalStyles.transliterationText}>
-                                {transliterations.medial || "_____"}
-                            </div>
                             <div style={modalStyles.formLabel}>Medial</div>
+                            {letter.formAudioUrls?.medial && (
+                                <button 
+                                    onClick={() => playAudio(letter.formAudioUrls!.medial!)}
+                                    style={{
+                                        ...modalStyles.audioButton,
+                                        padding: '5px 10px',
+                                        fontSize: '0.8rem',
+                                        margin: '5px 0'
+                                    }}
+                                >
+                                    Play
+                                </button>
+                            )}
                         </div>
                         <div style={modalStyles.formItem}>
                             <div style={modalStyles.formLetter}>{letter.forms.final}</div>
-                            <div style={modalStyles.transliterationText}>
-                                {transliterations.final || "_____"}
-                            </div>
                             <div style={modalStyles.formLabel}>Final</div>
+                            {letter.formAudioUrls?.final && (
+                                <button 
+                                    onClick={() => playAudio(letter.formAudioUrls!.final!)}
+                                    style={{
+                                        ...modalStyles.audioButton,
+                                        padding: '5px 10px',
+                                        fontSize: '0.8rem',
+                                        margin: '5px 0'
+                                    }}
+                                >
+                                    Play
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
 
                 {letter.audioUrl && (
-                    <button onClick={playAudio} style={modalStyles.audioButton}>
+                    <button onClick={() => playAudio(letter.audioUrl)} style={modalStyles.audioButton}>
                         Play Sound
                     </button>
                 )}

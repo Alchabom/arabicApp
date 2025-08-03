@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import LetterModal from "./LetterModal";
-
+import { useRouter } from "next/navigation";
 
 interface Letter {
   id: number;
@@ -11,12 +11,6 @@ interface Letter {
   transliteration?: string;
   audioUrl?: string;
   forms?: {
-    isolated: string;
-    initial: string;
-    medial: string;
-    final: string;
-  };
-  formTransliterations?: {
     isolated: string;
     initial: string;
     medial: string;
@@ -107,6 +101,12 @@ const HomePage: React.FC = () => {
   const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null);
   const [showModal, setShowModal] = useState(false);
 
+  const router = useRouter();
+
+  const goToFlash = () => {
+    router.push('/flashLearning');
+  }
+
   useEffect(() => {
     const fetchLetters = async () => {
       try {
@@ -177,8 +177,9 @@ const HomePage: React.FC = () => {
                     (e.currentTarget.style.backgroundColor =
                         styles.buttonBase.backgroundColor!)
                 }
+                onClick={() => goToFlash()}
             >
-              Page 1
+              Flashcards
             </button>
             <button
                 style={styles.buttonBase}

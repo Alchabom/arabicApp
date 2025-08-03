@@ -35,7 +35,7 @@ export async function GET() {
       letter: "ت", 
       name: "Tā'", 
       transliteration: "t", 
-      audioUrl: "",
+      audioUrl: "/audio/ta.mp3",
       forms: {
         isolated: "ت",
         initial: "تـ",
@@ -48,7 +48,7 @@ export async function GET() {
       letter: "ث", 
       name: "Thā'", 
       transliteration: "th", 
-      audioUrl: "",
+      audioUrl: "/audio/tha.mp3",
       forms: {
         isolated: "ث",
         initial: "ثـ",
@@ -61,7 +61,7 @@ export async function GET() {
       letter: "ج", 
       name: "Jīm", 
       transliteration: "j", 
-      audioUrl: "",
+      audioUrl: "/audio/jim.mp3",
       forms: {
         isolated: "ج",
         initial: "جـ",
@@ -74,7 +74,7 @@ export async function GET() {
       letter: "ح",
       name: "Ḥā'",
       transliteration: "h",
-      audioUrl: "",
+      audioUrl: "/audio/ha.mp3",
       forms: {
         isolated: "ح",
         initial: "حـ",
@@ -87,7 +87,7 @@ export async function GET() {
       letter: "خ",
       name: "Khā'",
       transliteration: "ch",
-      audioUrl: "",
+      audioUrl: "/audio/kha.mp3",
       forms: {
         isolated: "خ",
         initial: "خـ",
@@ -100,7 +100,7 @@ export async function GET() {
       letter: "د",
       name: "Dāl",
       transliteration: "d",
-      audioUrl: "",
+      audioUrl: "/audio/dal.mp3",
       forms: {
         isolated: "د",
         initial: "د",
@@ -113,7 +113,7 @@ export async function GET() {
       letter: "ذ",
       name: "Dhāl",
       transliteration: "dh",
-      audioUrl: "",
+      audioUrl: "/audio/dhal.mp3",
       forms: {
         isolated: "ذ",
         initial: "ذ",
@@ -126,7 +126,7 @@ export async function GET() {
       letter: "ر",
       name: "Rā'",
       transliteration: "r",
-      audioUrl: "",
+      audioUrl: "/audio/ra.mp3",
       forms: {
         isolated: "ر",
         initial: "ر",
@@ -139,7 +139,7 @@ export async function GET() {
       letter: "ز",
       name: "Zāy",
       transliteration: "z",
-      audioUrl: "",
+      audioUrl: "/audio/Zay.mp3",
       forms: {
         isolated: "ز",
         initial: "ز",
@@ -152,7 +152,7 @@ export async function GET() {
       letter: "س",
       name: "Sīn",
       transliteration: "s",
-      audioUrl: "",
+      audioUrl: "/audio/seen.mp3",
       forms: {
         isolated: "س",
         initial: "سـ",
@@ -165,7 +165,7 @@ export async function GET() {
       letter: "ش",
       name: "Shīn",
       transliteration: "sh",
-      audioUrl: "",
+      audioUrl: "/audio/sin.mp3",
       forms: {
         isolated: "ش",
         initial: "شـ",
@@ -178,7 +178,7 @@ export async function GET() {
       letter: "ص",
       name: "Ṣād",
       transliteration: "s",
-      audioUrl: "",
+      audioUrl: "/audio/sad.mp3",
       forms: {
         isolated: "ص",
         initial: "صـ",
@@ -191,7 +191,7 @@ export async function GET() {
       letter: "ض",
       name: "Ḍād",
       transliteration: "d",
-      audioUrl: "",
+      audioUrl: "/audio/dad.mp3",
       forms: {
         isolated: "ض",
         initial: "ضـ",
@@ -204,7 +204,7 @@ export async function GET() {
       letter: "ط",
       name: "Ṭā'",
       transliteration: "t",
-      audioUrl: "",
+      audioUrl: "/audio/taa.mp3",
       forms: {
         isolated: "ط",
         initial: "طـ",
@@ -217,7 +217,7 @@ export async function GET() {
       letter: "ظ",
       name: "Ẓā'",
       transliteration: "z",
-      audioUrl: "",
+      audioUrl: "/audio/zaa.mp3",
       forms: {
         isolated: "ظ",
         initial: "ظـ",
@@ -230,7 +230,7 @@ export async function GET() {
       letter: "ع",
       name: "ayn",
       transliteration: "c",
-      audioUrl: "",
+      audioUrl: "/audio/ayn.mp3",
       forms: {
         isolated: "ع",
         initial: "عـ",
@@ -243,7 +243,7 @@ export async function GET() {
       letter: "غ",
       name: "Ghayn",
       transliteration: "gh",
-      audioUrl: "",
+      audioUrl: "/audio/Ghayn.mp3",
       forms: {
         isolated: "غ",
         initial: "غـ",
@@ -256,7 +256,7 @@ export async function GET() {
       letter: "ف",
       name: "Fā'",
       transliteration: "f",
-      audioUrl: "",
+      audioUrl: "/audio/fa.mp3",
       forms: {
         isolated: "ف",
         initial: "فـ",
@@ -269,7 +269,7 @@ export async function GET() {
       letter: "ق",
       name: "Qāf",
       transliteration: "q",
-      audioUrl: "",
+      audioUrl: "/audio/qaf.mp3",
       forms: {
         isolated: "ق",
         initial: "قـ",
@@ -282,7 +282,7 @@ export async function GET() {
       letter: "ك",
       name: "Kāf",
       transliteration: "k",
-      audioUrl: "",
+      audioUrl: "/audio/kaf.mp3",
       forms: {
         isolated: "ك",
         initial: "كـ",
@@ -295,7 +295,7 @@ export async function GET() {
       letter: "ل",
       name: "Lām",
       transliteration: "l",
-      audioUrl: "",
+      audioUrl: "/audio/Lam.mp3",
       forms: {
         isolated: "ل",
         initial: "لـ",
@@ -308,7 +308,7 @@ export async function GET() {
       letter: "م",
       name: "Mīm",
       transliteration: "m",
-      audioUrl: "",
+      audioUrl: "/audio/mim.mp3",
       forms: {
         isolated: "م",
         initial: "مـ",
@@ -321,7 +321,7 @@ export async function GET() {
       letter: "ن",
       name: "Nūn",
       transliteration: "n",
-      audioUrl: "",
+      audioUrl: "/audio/nun.mp3",
       forms: {
         isolated: "ن",
         initial: "نـ",
@@ -334,7 +334,7 @@ export async function GET() {
       letter: "ه",
       name: "Hā'",
       transliteration: "h",
-      audioUrl: "",
+      audioUrl: "/audio/ha 2.mp3",
       forms: {
         isolated: "ه",
         initial: "هـ",
@@ -347,7 +347,7 @@ export async function GET() {
       letter: "و",
       name: "Wāw",
       transliteration: "w",
-      audioUrl: "",
+      audioUrl: "/audio/waw.mp3",
       forms: {
         isolated: "و",
         initial: "و",
@@ -360,7 +360,7 @@ export async function GET() {
       letter: "ي",
       name: "Yā'",
       transliteration: "y",
-      audioUrl: "",
+      audioUrl: "/audio/ya.mp3",
       forms: {
         isolated: "ي",
         initial: "يـ",
@@ -384,35 +384,6 @@ export async function GET() {
 
   ];
 
-  // Add empty placeholder formTransliterations for each letter
-  const lettersData = baseLettersData.map(letter => {
-    // Use empty strings as placeholders for form transliterations
-    let formTransliterations = {
-      isolated: "",
-      initial: "",
-      medial: "",
-      final: ""
-    };
 
-    switch(letter.id) {
-      case 1:
-        formTransliterations = {
-          isolated: "aa",
-          initial: "ai",
-          medial: "am",
-          final: "af"
-        };
-        break;
-
-    }
-
-
-    // Return the letter with the added formTransliterations property
-    return {
-      ...letter,
-      formTransliterations
-    };
-  });
-
-  return NextResponse.json(lettersData);
+  return NextResponse.json(baseLettersData);
 }
