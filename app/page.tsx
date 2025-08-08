@@ -107,6 +107,10 @@ const HomePage: React.FC = () => {
     router.push('/flashLearning');
   }
 
+  const goToDrawing = () => {
+    router.push('/drawingPractice');
+  }
+
   useEffect(() => {
     const fetchLetters = async () => {
       try {
@@ -191,8 +195,9 @@ const HomePage: React.FC = () => {
                     (e.currentTarget.style.backgroundColor =
                         styles.buttonBase.backgroundColor!)
                 }
+                onClick={() => goToDrawing()}
             >
-              Page 2
+             Drawing Practice
             </button>
             <button
                 style={styles.buttonBase}
@@ -210,7 +215,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* ✅ Modal goes here, not inside the main div */}
+
         {showModal && selectedLetter && (
             <LetterModal letter={selectedLetter} onClose={handleCloseModal} />
         )}
