@@ -209,8 +209,9 @@ const HomePage: React.FC = () => {
                     (e.currentTarget.style.backgroundColor =
                         styles.buttonBase.backgroundColor!)
                 }
+                onClick={() => router.push('/test')}
             >
-              Page 3
+              Test Mode
             </button>
           </div>
         </div>

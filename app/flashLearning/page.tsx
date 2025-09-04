@@ -11,31 +11,20 @@ const styles = {
     padding: '20px',
     boxSizing: 'border-box' as const,
   },
-  gridContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '1.5rem',
-    padding: '1rem',
-    width: '100%',
+  topNav: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '8px',
+    marginBottom: '12px',
+    flexWrap: 'wrap' as const,
   },
-  buttonBase: {
-    padding: "10px 15px",
-    margin: "5px",
-    fontSize: "1rem",
-    color: "white",
-    backgroundColor: "#007bff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
+  btn: {
+    padding: '10px 15px',
+    borderRadius: 8,
+    border: '1px solid #e5e7eb',
+    background: '#fafafa',
+    cursor: 'pointer',
   } as React.CSSProperties,
-  buttonHover: {
-    backgroundColor: "#0056b3",
-  },
-  buttonContainer: {
-    textAlign: 'center' as const,
-    padding: '20px 0', // Optional: Adds some space around the buttons
-  }
 };
 
 
@@ -115,38 +104,14 @@ export default function FlashLearningPage() {
         <div style={styles.container}>
           <h1 style={{textAlign:'center', marginBottom:'10px'}}>Flashcards</h1>
           <p style={{textAlign:'center', color:'#555', marginTop:0}}>Tap a card to reveal the answer</p>
+
+          <div style={styles.topNav}>
+            <button style={styles.btn} onClick={goToHome}>Home</button>
+            <button style={styles.btn} onClick={goToDrawing}>Drawing Practice</button>
+            <button style={styles.btn} onClick={() => router.push('/test')}>Test Mode</button>
+          </div>
+
           <FlashcardList flashcards={flashcards}/>
-        </div>
-        <div style={styles.buttonContainer}>
-          <button
-              style={styles.buttonBase}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor =
-                  styles.buttonHover.backgroundColor)}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor =
-                  styles.buttonBase.backgroundColor!)}
-              onClick={() => goToHome()}
-          >
-            Home
-          </button>
-          <button
-              style={styles.buttonBase}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor =
-                  styles.buttonHover.backgroundColor)}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor =
-                  styles.buttonBase.backgroundColor!)}
-              onClick={() => goToDrawing()}
-          >
-            Drawing Practice
-          </button>
-          <button
-              style={styles.buttonBase}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor =
-                  styles.buttonHover.backgroundColor)}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor =
-                  styles.buttonBase.backgroundColor!)}
-          >
-            Page 3
-          </button>
         </div>
       </>
 );

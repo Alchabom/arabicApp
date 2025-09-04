@@ -457,6 +457,7 @@ export default function DrawingPracticePage() {
           <div className="navs">
             <button onClick={goToHome}>Home</button>
             <button onClick={goToFlash}>Flashcards</button>
+            <button onClick={() => router.push('/test')}>Test Mode</button>
           </div>
         </div>
 
