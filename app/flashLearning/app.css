@@ -13,26 +13,26 @@ body {
 .card-grid {
     display: grid;
     align-items: stretch;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2rem 2.25rem;
     width: 100%;
-    padding: 1rem;
+    padding: 0.5rem 1rem 1.5rem;
 }
 .card {
-
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    border-radius: .25rem;
-    box-shadow: 0 0 5px 2px rgba(0, 0, 0, .3);
+    border-radius: .5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
     background-color: white;
-    transition-style: preserve-3d;
-    transition: 150ms;
+    transition: transform 150ms, box-shadow 150ms;
     cursor: pointer;
-    height: 130px;
-    transform: perspective(1000px) rotateY(var(--rotateY, 0deg))
-    translateY(var(--translate-y, 0));
+    min-height: 210px;
+    padding: 0.5rem;
+    overflow: hidden;
+    box-sizing: border-box;
+    transform: perspective(1000px) rotateY(var(--rotateY, 0deg)) translateY(var(--translate-y, 0));
 }
 .card:hover {
     --translate-y: -2px;
@@ -52,6 +52,8 @@ body {
     position: absolute;
     padding: 1rem;
     backface-visibility: hidden;
+    inset: 0;
+    overflow: hidden;
 }
 
 .card .back {

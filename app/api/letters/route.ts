@@ -2,7 +2,6 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Define the base letter data
   const baseLettersData = [
     { 
       id: 1, 

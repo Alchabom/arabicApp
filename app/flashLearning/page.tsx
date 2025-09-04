@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 const styles = {
   container: {
-    maxWidth: '900',
+    maxWidth: '900px',
     margin: '0 auto',
     padding: '20px',
     boxSizing: 'border-box' as const,
@@ -113,6 +113,8 @@ export default function FlashLearningPage() {
   return (
       <>
         <div style={styles.container}>
+          <h1 style={{textAlign:'center', marginBottom:'10px'}}>Flashcards</h1>
+          <p style={{textAlign:'center', color:'#555', marginTop:0}}>Tap a card to reveal the answer</p>
           <FlashcardList flashcards={flashcards}/>
         </div>
         <div style={styles.buttonContainer}>
