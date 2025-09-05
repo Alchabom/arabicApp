@@ -39,14 +39,83 @@ const ui = {
 
 function shuffle<T>(arr: T[]): T[] { return [...arr].sort(() => Math.random() - 0.5); }
 
+function fireConfetti() {
+  if (typeof window === 'undefined') return;
+  const duration = 1100;
+  const end = Date.now() + duration;
+  const colors = ['#34d399', '#60a5fa', '#f472b6', '#fbbf24', '#f87171'];
+  const frame = () => {
+    const count = 10;
+    const root = document.body;
+    for (let i=0;i<count;i++){
+      const d = document.createElement('div');
+      d.style.position='fixed'; d.style.width='8px'; d.style.height='8px'; d.style.borderRadius='2px';
+      d.style.left = Math.random()*100+'%'; d.style.top = '0px';
+      d.style.background = colors[(Math.random()*colors.length)|0];
+      d.style.opacity = '0.9'; d.style.transform = `translateY(0px)`;
+      root.appendChild(d);
+      const toY = window.innerHeight + 40 + Math.random()*200;
+      const toX = (Math.random()-0.5)*200;
+      const rot = (Math.random()*360)|0;
+      const time = 800 + Math.random()*600;
+      d.animate([
+        { transform: 'translate(0, -40px) rotate(0deg)', opacity: 0.9 },
+        { transform: `translate(${toX}px, ${toY}px) rotate(${rot}deg)`, opacity: 0.2 }
+      ], { duration: time, easing: 'cubic-bezier(.17,.67,.08,1.01)' }).onfinish = () => d.remove();
+    }
+    if (Date.now() < end) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+function CelebrationCard({ total, correct, onNewQuiz }:{ total:number; correct:number; onNewQuiz: ()=>void }){
+  useEffect(()=>{ fireConfetti(); try{ navigator.vibrate && navigator.vibrate(60); }catch{} },[]);
+  const pct = Math.round((correct/Math.max(1,total))*100);
+  const msg = pct === 100 ? 'Perfect! 🎉' : pct >= 80 ? 'Great job! 🎊' : pct >= 50 ? 'Nice work! 👍' : 'Good effort! 💪 Keep practicing';
+  return (
+    <div style={{ ...ui.card, marginTop: 16, textAlign:'center' as const }}>
+      <h3 style={{ marginTop: 0 }}>Quiz Finished</h3>
+      <div style={{ fontSize: 18, marginBottom: 6 }}>{msg}</div>
+      <div style={{ color:'#374151', marginBottom: 12 }}>Your score: <b>{correct}</b> / {total} ({pct}%)</div>
+      <div style={{ display:'flex', justifyContent:'center', gap:8 }}>
+        <button style={{ ...ui.btn }} onClick={()=>window?.location?.reload()}>Review Again</button>
+        <button style={{ ...ui.btn, ...ui.primary }} onClick={onNewQuiz}>New Quiz</button>
+      </div>
+    </div>
+  );
+}
+
 export default function TestPage() {
   const [letters, setLetters] = useState<Letter[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { correct: boolean; value?: string; score?: number }>>({});
   const [loading, setLoading] = useState(true);
+  const [quizKey, setQuizKey] = useState(0);
 
   const router = useRouter();
+
+    const buildQuiz = (data: Letter[]) => {
+        const pool = shuffle(data).slice(0, Math.min(10, data.length)); // <-- The fix is here
+        const qs: Question[] = [];
+        for (const l of pool) {
+            const opts1 = shuffle([l.name, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.name)]).slice(0, 4);
+            qs.push({ id: `mcq-name-${l.id}`, type: "mcq-name", letter: l, prompt: `What is the name of ${l.letter}?`, options: opts1, answer: l.name });
+            const glyphs = shuffle([l.letter, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.letter)]).slice(0, 4);
+            qs.push({ id: `mcq-letter-${l.id}`, type: "mcq-letter", letter: l, prompt: `Select the letter for ${l.name}`, options: glyphs, answer: l.letter });
+            if (l.forms) {
+                const formValues = [l.forms.isolated, l.forms.initial, l.forms.medial, l.forms.final].filter(Boolean);
+                const sample = shuffle([formValues[0], ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => (x.forms?.isolated || x.letter))]).slice(0, 4);
+                qs.push({ id: `forms-${l.id}`, type: "forms", letter: l, prompt: `Match the isolated form for ${l.name}` , options: sample, answer: formValues[0] });
+            }
+            if (l.audioUrl) {
+                const aopts = shuffle([l.name, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.name)]).slice(0, 4);
+                qs.push({ id: `audio-${l.id}`, type: "audio", letter: l, audioUrl: l.audioUrl!, options: aopts, answer: l.name });
+            }
+            qs.push({ id: `write-${l.id}`, type: "write", letter: l, prompt: `Trace the letter ${l.letter}` });
+        }
+        setQuestions(shuffle(qs).slice(0, 12));
+    };
 
   useEffect(() => {
     const load = async () => {
@@ -54,31 +123,7 @@ export default function TestPage() {
         const res = await fetch("/api/letters");
         const data: Letter[] = await res.json();
         setLetters(data);
-        // Build a small mixed quiz (up to 10 questions)
-        const pool = data.slice(0, Math.min(10, data.length));
-        const qs: Question[] = [];
-        for (const l of pool) {
-          // MCQ by name
-          const opts1 = shuffle([l.name, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.name)]).slice(0, 4);
-          qs.push({ id: `mcq-name-${l.id}`, type: "mcq-name", letter: l, prompt: `What is the name of ${l.letter}?`, options: opts1, answer: l.name });
-          // MCQ by letter (show name, choose Arabic glyph)
-          const glyphs = shuffle([l.letter, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.letter)]).slice(0, 4);
-          qs.push({ id: `mcq-letter-${l.id}`, type: "mcq-letter", letter: l, prompt: `Select the letter for ${l.name}`, options: glyphs, answer: l.letter });
-          // Forms (if present)
-          if (l.forms) {
-            const formValues = [l.forms.isolated, l.forms.initial, l.forms.medial, l.forms.final].filter(Boolean);
-            const sample = shuffle([formValues[0], ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => (x.forms?.isolated || x.letter))]).slice(0, 4);
-            qs.push({ id: `forms-${l.id}`, type: "forms", letter: l, prompt: `Match the isolated form for ${l.name}` , options: sample, answer: formValues[0] });
-          }
-          // Audio if available
-          if (l.audioUrl) {
-            const aopts = shuffle([l.name, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.name)]).slice(0, 4);
-            qs.push({ id: `audio-${l.id}`, type: "audio", letter: l, audioUrl: l.audioUrl!, options: aopts, answer: l.name });
-          }
-          // Writing task
-          qs.push({ id: `write-${l.id}`, type: "write", letter: l, prompt: `Trace the letter ${l.letter}` });
-        }
-        setQuestions(shuffle(qs).slice(0, 12));
+        buildQuiz(data);
       } catch (e) {
         console.error(e);
       } finally {
@@ -91,27 +136,35 @@ export default function TestPage() {
   const current = questions[index];
   const progress = useMemo(() => ({ total: questions.length, current: index + 1 }), [questions.length, index]);
 
-  const answerMcq = (q: McqQuestion, value: string) => {
+  const answerMcq = (q: McqQuestion | AudioQuestion | FormsQuestion, value: string) => {
     if (answers[q.id]) return;
     const correct = value === q.answer;
     setAnswers(a => ({ ...a, [q.id]: { correct, value } }));
   };
 
   const answerWrite = (q: WriteQuestion, score: number) => {
-    // Score threshold 0.6 considered pass
     setAnswers(a => ({ ...a, [q.id]: { correct: score >= 0.6, score } }));
   };
 
   const goNext = () => setIndex(i => Math.min(i + 1, questions.length - 1));
   const goPrev = () => setIndex(i => Math.max(i - 1, 0));
 
-  const submitted = useMemo(() => Object.keys(answers).length >= questions.length, [answers, questions.length]);
+  const submitted = useMemo(() => Object.keys(answers).length >= questions.length && questions.length>0, [answers, questions.length]);
   const totalCorrect = useMemo(() => Object.values(answers).filter(a => a.correct).length, [answers]);
+
+  const startNewQuiz = () => {
+    if (letters.length) {
+      setAnswers({});
+      setIndex(0);
+      setQuizKey(k => k + 1);
+      buildQuiz(letters);
+    }
+  };
 
   return (
     <div style={ui.page as React.CSSProperties}>
       <h1 style={ui.header}>Arabic Test Mode</h1>
-      <p style={ui.sub}>Mixed quiz: identification, audio, forms, and tracing. Progress {progress.current}/{progress.total}</p>
+      <p style={ui.sub}>Mixed quiz: identification, audio, forms, and tracing. Progress {progress.current}/{progress.total} • Build v-test-2025-09-05-12:10</p>
 
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 12, gap: 8 }}>
         <button onClick={() => router.push('/')} style={{ ...ui.btn }}>Home</button>
@@ -123,7 +176,10 @@ export default function TestPage() {
       {!loading && questions.length === 0 && <div>No questions available.</div>}
 
       {!loading && current && (
-        <div style={{ ...ui.card, maxWidth: 860, margin: "0 auto" }}>
+        <div key={quizKey} style={{ ...ui.card, maxWidth: 860, margin: "0 auto" }}>
+          <div style={{ height: 8, background:'#f3f4f6', borderRadius: 999, overflow:'hidden', marginBottom:12 }}>
+            <div style={{ width: `${Math.max(1, Math.round((progress.current-1)/Math.max(1,progress.total)*100))}%`, height:'100%', background:'#60a5fa' }} />
+          </div>
           <QuestionRenderer
             q={current}
             given={answers[current.id]}
@@ -138,10 +194,7 @@ export default function TestPage() {
       )}
 
       {!loading && submitted && (
-        <div style={{ ...ui.card, marginTop: 16 }}>
-          <h3 style={{ marginTop: 0 }}>Results</h3>
-          <p>Score: {totalCorrect}/{questions.length}</p>
-        </div>
+        <CelebrationCard key={`celebrate-${quizKey}`} total={questions.length} correct={totalCorrect} onNewQuiz={startNewQuiz} />
       )}
     </div>
   );
@@ -149,16 +202,28 @@ export default function TestPage() {
 
 function QuestionRenderer({ q, given, onAnswerMcq, onAnswerWrite }:{ q: Question; given?: { correct: boolean; value?: string; score?: number }; onAnswerMcq: (q: McqQuestion | AudioQuestion | FormsQuestion, v: string)=>void; onAnswerWrite: (q: WriteQuestion, score: number)=>void }){
   switch (q.type) {
-    case "mcq-name":
-      return <Mcq prompt={q.prompt} options={q.options} answer={q.answer} given={given} onSelect={(v)=>onAnswerMcq(q, v)} />
-    case "mcq-letter":
-      return <Mcq prompt={q.prompt} options={q.options} answer={q.answer} given={given} onSelect={(v)=>onAnswerMcq(q, v)} bigFont />
-    case "audio":
-      return <AudioMcq audioUrl={q.audioUrl} options={q.options} answer={q.answer} given={given} onSelect={(v)=>onAnswerMcq(q, v)} />
-    case "forms":
-      return <Mcq prompt={q.prompt} options={q.options} answer={q.answer} given={given} onSelect={(v)=>onAnswerMcq(q, v)} bigFont />
-    case "write":
-      return <WriteTask prompt={q.prompt} glyph={q.letter.letter || q.letter.forms?.isolated || ''} given={given} onScored={(s)=>onAnswerWrite(q, s)} />
+    case "mcq-name": {
+      const qq = q as McqQuestion;
+      return <Mcq prompt={qq.prompt} options={qq.options} answer={qq.answer} given={given} onSelect={(v)=>onAnswerMcq(qq, v)} />
+    }
+    case "mcq-letter": {
+      const qq = q as McqQuestion;
+      return <Mcq prompt={qq.prompt} options={qq.options} answer={qq.answer} given={given} onSelect={(v)=>onAnswerMcq(qq, v)} bigFont />
+    }
+    case "audio": {
+      const qq = q as AudioQuestion;
+      return <AudioMcq audioUrl={qq.audioUrl} options={qq.options} answer={qq.answer} given={given} onSelect={(v)=>onAnswerMcq(qq, v)} />
+    }
+    case "forms": {
+      const qq = q as FormsQuestion;
+      return <Mcq prompt={qq.prompt} options={qq.options} answer={qq.answer} given={given} onSelect={(v)=>onAnswerMcq(qq, v)} bigFont />
+    }
+    case "write": {
+      const qq = q as WriteQuestion;
+      return <WriteTask prompt={qq.prompt} glyph={qq.letter.letter || qq.letter.forms?.isolated || ''} given={given} onScored={(s)=>onAnswerWrite(qq, s)} />
+    }
+    default:
+      return null;
   }
 }
 
@@ -215,12 +280,10 @@ function AudioMcq({ audioUrl, options, answer, given, onSelect }:{ audioUrl: str
 }
 
 function WriteTask({ prompt, glyph, given, onScored }:{ prompt: string; glyph: string; given?: { score?: number }; onScored: (s:number)=>void }){
-  // Minimal inline canvas tracing, simplified from drawingPractice: use a transparent overlay and track coverage ratio via crude bbox heuristic.
   const [done, setDone] = useState(false);
   const [score, setScore] = useState<number | null>(given?.score ?? null);
 
   useEffect(() => {
-    // When marked done externally, ignore
   }, []);
 
   return (
