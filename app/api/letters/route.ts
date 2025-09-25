@@ -1,6 +1,9 @@
 
 import { NextResponse } from 'next/server';
 
+// Ensure this API runs on Node.js runtime on Vercel (not Edge)
+export const runtime = 'nodejs';
+
 export async function GET() {
   const baseLettersData = [
     { 

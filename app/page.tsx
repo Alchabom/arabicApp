@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import LetterModal from "./LetterModal";
 import { useRouter } from "next/navigation";
 
+// Ensure this page is statically generated so Vercel always emits a route
+export const dynamic = 'force-static';
+
 interface Letter {
   id: number;
   letter: string;
