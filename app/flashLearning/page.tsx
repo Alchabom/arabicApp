@@ -1,32 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import FlashcardList from './flashcardList';
-import './app.css';
-import { useRouter } from "next/navigation";
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-    boxSizing: 'border-box' as const,
-  },
-  topNav: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '8px',
-    marginBottom: '12px',
-    flexWrap: 'wrap' as const,
-  },
-  btn: {
-    padding: '10px 15px',
-    borderRadius: 8,
-    border: '1px solid #e5e7eb',
-    background: '#fafafa',
-    cursor: 'pointer',
-  } as React.CSSProperties,
-};
-
+import { PageNav } from "@/components/page-nav";
 
 interface Letter {
   id: number;
@@ -50,18 +25,6 @@ interface Flashcard {
 
 export default function FlashLearningPage() {
   const [flashcards, setFlashcards] = React.useState<Flashcard[]>([]);
-
-  const router = useRouter();
-
-  const goToHome = () => {
-    router.push('/');
-  }
-
-  const goToDrawing = () => {
-    router.push('/drawingPractice');
-  }
-
-
 
   useEffect(() => {
     const fetchLettersAndCreateFlashcards = async () => {
@@ -97,22 +60,15 @@ export default function FlashLearningPage() {
     fetchLettersAndCreateFlashcards();
   }, []);
 
-
-
   return (
-      <>
-        <div style={styles.container}>
-          <h1 style={{textAlign:'center', marginBottom:'10px'}}>Flashcards</h1>
-          <p style={{textAlign:'center', color:'#555', marginTop:0}}>Tap a card to reveal the answer</p>
+    <main className="mx-auto max-w-3xl px-4 pt-12 pb-24">
+      <PageNav />
+      <h1 className="text-center font-display text-2xl text-ink">Flashcards</h1>
+      <p className="mb-8 text-center text-sm text-muted-foreground">
+        Tap a card to reveal the answer
+      </p>
 
-          <div style={styles.topNav}>
-            <button style={styles.btn} onClick={goToHome}>Home</button>
-            <button style={styles.btn} onClick={goToDrawing}>Drawing Practice</button>
-            <button style={styles.btn} onClick={() => router.push('/test')}>Test Mode</button>
-          </div>
-
-          <FlashcardList flashcards={flashcards}/>
-        </div>
-      </>
-);
+      <FlashcardList flashcards={flashcards} />
+    </main>
+  );
 };

@@ -7,7 +7,7 @@ interface FlashcardListProps {
 
 export default function FlashcardList({ flashcards }: FlashcardListProps) {
     return (
-        <div className="card-grid">
+        <div className="grid items-stretch gap-6 [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))]">
             {flashcards?.map(flashcard => (
                 <Flashcard key={flashcard.id} flashcard={flashcard} />
             ))}

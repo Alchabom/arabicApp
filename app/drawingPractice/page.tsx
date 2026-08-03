@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import LetterModal from '../LetterModal';
+import type { Letter } from '@/lib/letters';
+import { PageNav } from '@/components/page-nav';
+import { LetterDetailDialog } from '@/components/letter-detail-dialog';
+import { Button } from '@/components/ui/button';
+
+const GUIDE_FONT_STACK = 'Amiri, system-ui, -apple-system, Segoe UI, Arial, Noto Sans Arabic, sans-serif';
 
 export default function DrawingPracticePage() {
-  const router = useRouter();
-
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
@@ -16,8 +18,7 @@ export default function DrawingPracticePage() {
 
   const [isPainting, setIsPainting] = useState(false);
   const [lineWidth, setLineWidth] = useState(10);
-  const [strokeColor, setStrokeColor] = useState('#1f2937');
-  interface Letter { id: number; letter: string; name: string; transliteration?: string; audioUrl?: string; forms?: { isolated: string; initial: string; medial: string; final: string; }; }
+  const [strokeColor, setStrokeColor] = useState('#b33a2e');
   const [letters, setLetters] = useState<Letter[]>([]);
   const [selectedLetterObj, setSelectedLetterObj] = useState<Letter | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -64,7 +65,7 @@ export default function DrawingPracticePage() {
     tctx.textAlign = 'center';
     tctx.textBaseline = 'middle';
 
-    tctx.font = `${fontSize}px system-ui, -apple-system, Segoe UI, Arial, Noto Sans Arabic, sans-serif`;
+    tctx.font = `${fontSize}px ${GUIDE_FONT_STACK}`;
 
     const cx = width * 0.55;
     const cy = height * 0.55;
@@ -135,7 +136,7 @@ export default function DrawingPracticePage() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const fontSize = Math.min(width, height) * 0.6;
-      ctx.font = `${fontSize}px system-ui, -apple-system, Segoe UI, Arial, Noto Sans Arabic, sans-serif`;
+      ctx.font = `${fontSize}px ${GUIDE_FONT_STACK}`;
       ctx.fillText(glyph, width * 0.55, height * 0.55);
       ctx.restore();
 
@@ -145,7 +146,7 @@ export default function DrawingPracticePage() {
       ctx.lineWidth = Math.max(2, Math.min(width, height) * 0.01);
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = `${fontSize}px system-ui, -apple-system, Segoe UI, Arial, Noto Sans Arabic, sans-serif`;
+      ctx.font = `${fontSize}px ${GUIDE_FONT_STACK}`;
       ctx.strokeText(glyph, width * 0.55, height * 0.55);
       ctx.restore();
     }
@@ -333,10 +334,6 @@ export default function DrawingPracticePage() {
     setFeedback('');
   };
 
-  // Navigation
-  const goToHome = () => router.push('/');
-  const goToFlash = () => router.push('/flashLearning');
-
   // Load letters from API and map to internal type
   useEffect(() => {
     const fetchLetters = async () => {
@@ -395,87 +392,103 @@ export default function DrawingPracticePage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [resizeCanvas]);
 
+  // Amiri loads async; canvas text doesn't repaint on font swap like DOM
+  // text does, so re-render the guide once it's actually available.
+  useEffect(() => {
+    document.fonts?.ready.then(() => resizeCanvas());
+  }, [resizeCanvas]);
+
   return (
-    <>
-      <style jsx>{`
-        :root { color-scheme: light; }
-        .drawing-app-container { height: 100vh; display: flex; background: #e5e7eb; }
-        #toolbar { width: 260px; background: #111827; color: white; padding: 16px; display: flex; flex-direction: column; }
-        #toolbar h1 { margin: 0 0 12px; font-size: 1.6rem; }
-        #toolbar label { font-size: 0.9rem; margin-top: 8px; }
-        #toolbar input, #toolbar select { margin-top: 6px; margin-bottom: 8px; padding: 6px; border-radius: 6px; border: 1px solid #374151; background: #1f2937; color: white; }
-        #toolbar .row { display: flex; gap: 8px; align-items: center; }
-        #toolbar button { margin-top: 8px; background: #2563eb; border: none; color: white; padding: 10px 12px; border-radius: 6px; cursor: pointer; }
-        #toolbar button:hover { background: #1d4ed8; }
-        .stats { margin-top: 10px; font-size: 0.9rem; color: #d1d5db; }
-        .drawing-board-container { flex: 1; padding: 10px; position: relative; }
-        #drawing-board { width: 100%; height: 100%; background: white; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); touch-action: none; }
-        .navs { margin-top: auto; display: flex; gap: 8px; }
-      `}</style>
+    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 pt-8 pb-16 lg:flex-row">
+      <aside className="flex w-full flex-col gap-4 lg:w-72 lg:shrink-0">
+        <PageNav />
 
-      <section className="drawing-app-container">
-        <div id="toolbar">
-          <h1>Drawing Practice</h1>
+        <div className="flex flex-col gap-4 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
+          <h1 className="font-display text-xl text-ink">Drawing Practice</h1>
 
-          <label>Letter to trace</label>
-          <select
-            value={selectedLetterObj ? String(selectedLetterObj.id) : ''}
-            onChange={(e) => {
-              const id = Number(e.target.value);
-              const letterObj = letters.find(l => l.id === id) || null;
-              setSelectedLetterObj(letterObj);
-            }}
+          <label className="flex flex-col gap-1.5 text-sm text-muted-foreground">
+            Letter to trace
+            <select
+              className="rounded-lg border border-foreground/10 bg-muted px-2.5 py-1.5 font-arabic text-ink"
+              value={selectedLetterObj ? String(selectedLetterObj.id) : ''}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                const letterObj = letters.find(l => l.id === id) || null;
+                setSelectedLetterObj(letterObj);
+              }}
+            >
+              {letters.map(l => (
+                <option key={l.id} value={l.id}>
+                  {l.letter} - {l.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button
+            variant="outline"
+            onClick={() => setShowModal(true)}
+            disabled={!selectedLetterObj}
           >
-            {letters.map(l => (
-              <option key={l.id} value={l.id}>
-                {l.letter} - {l.name}
-              </option>
-            ))}
-          </select>
-          <button onClick={() => setShowModal(true)} disabled={!selectedLetterObj}>Show letter details</button>
+            Show letter details
+          </Button>
 
-          <label>Stroke color</label>
-          <input type="color" value={strokeColor} onChange={(e) => setStrokeColor(e.target.value)} />
+          <label className="flex items-center justify-between text-sm text-muted-foreground">
+            Stroke color
+            <input
+              type="color"
+              className="h-8 w-12 rounded-md border border-foreground/10 bg-muted"
+              value={strokeColor}
+              onChange={(e) => setStrokeColor(e.target.value)}
+            />
+          </label>
 
-          <label>Line width</label>
-          <input type="number" min={2} max={40} value={lineWidth} onChange={(e) => setLineWidth(Number(e.target.value) || 1)} />
+          <label className="flex items-center justify-between text-sm text-muted-foreground">
+            Line width
+            <input
+              type="number"
+              min={2}
+              max={40}
+              className="w-16 rounded-md border border-foreground/10 bg-muted px-2 py-1 text-ink"
+              value={lineWidth}
+              onChange={(e) => setLineWidth(Number(e.target.value) || 1)}
+            />
+          </label>
 
-          <button onClick={clearCanvas}>Clear</button>
+          <Button variant="secondary" onClick={clearCanvas}>
+            Clear
+          </Button>
 
-          <div className="stats">
+          <div className="font-mono text-xs text-muted-foreground">
             {score ? (
-              <>
+              <div className="flex flex-col gap-1">
                 <div>Coverage: {(score.coverage * 100).toFixed(0)}%</div>
                 <div>IoU: {(score.iou * 100).toFixed(0)}%</div>
-                <div>{feedback}</div>
-              </>
+                <div className="text-vermillion">{feedback}</div>
+              </div>
             ) : (
               <div>Trace the letter along the faint guide.</div>
             )}
           </div>
-
-          <div className="navs">
-            <button onClick={goToHome}>Home</button>
-            <button onClick={goToFlash}>Flashcards</button>
-            <button onClick={() => router.push('/test')}>Test Mode</button>
-          </div>
         </div>
+      </aside>
 
-        <div className="drawing-board-container">
-          <canvas
-            id="drawing-board"
-            ref={canvasRef}
-            onPointerDown={startPainting}
-            onPointerUp={stopPainting}
-            onPointerMove={draw}
-            onPointerLeave={stopPainting}
-            onPointerCancel={stopPainting}
-          />
-        </div>
-      </section>
-      {showModal && selectedLetterObj && (
-        <LetterModal letter={selectedLetterObj} onClose={() => setShowModal(false)} />
-      )}
-    </>
+      <div className="relative min-h-[420px] flex-1 rounded-xl bg-card p-2 shadow-lg">
+        <canvas
+          className="h-full w-full touch-none rounded-lg"
+          ref={canvasRef}
+          onPointerDown={startPainting}
+          onPointerUp={stopPainting}
+          onPointerMove={draw}
+          onPointerLeave={stopPainting}
+          onPointerCancel={stopPainting}
+        />
+      </div>
+
+      <LetterDetailDialog
+        letter={selectedLetterObj}
+        open={showModal}
+        onOpenChange={setShowModal}
+      />
+    </main>
   );
 }

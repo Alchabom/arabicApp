@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { PageNav } from "@/components/page-nav";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Letter {
   id: number;
@@ -21,29 +23,14 @@ interface FormsQuestion extends QuestionBase { prompt: string; options: string[]
 
 type Question = McqQuestion | AudioQuestion | WriteQuestion | FormsQuestion;
 
-const ui = {
-  page: { maxWidth: 900, margin: "0 auto", padding: 16 },
-  header: { textAlign: "center" as const, margin: "12px 0 4px" },
-  sub: { textAlign: "center" as const, color: "#555", marginBottom: 16 },
-  card: { background: "#fff", borderRadius: 10, boxShadow: "0 6px 18px rgba(0,0,0,.12)", padding: 16 },
-  row: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const },
-  btn: { padding: "10px 15px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fafafa", cursor: "pointer" },
-  primary: { background: "#2563eb", color: "white", border: "none" },
-  option: (active: boolean, state: "idle" | "correct" | "wrong") => {
-    let bg = "#fafafa", color = "#111", border = "#e5e7eb";
-    if (active && state === "correct") { bg = "#e6f4ea"; color = "#1b5e20"; border = "#2e7d32"; }
-    if (active && state === "wrong") { bg = "#fdecea"; color = "#7f1d1d"; border = "#c62828"; }
-    return { padding: "9px 12px", minHeight: 40, width: "100%", borderRadius: 8, border: `1px solid ${border}`, background: bg, color } as React.CSSProperties;
-  }
-};
-
 function shuffle<T>(arr: T[]): T[] { return [...arr].sort(() => Math.random() - 0.5); }
+
+const CONFETTI_COLORS = ['#b33a2e', '#8a6a2a', '#1b2130', '#e4dbc5'];
 
 function fireConfetti() {
   if (typeof window === 'undefined') return;
   const duration = 1100;
   const end = Date.now() + duration;
-  const colors = ['#34d399', '#60a5fa', '#f472b6', '#fbbf24', '#f87171'];
   const frame = () => {
     const count = 10;
     const root = document.body;
@@ -51,7 +38,7 @@ function fireConfetti() {
       const d = document.createElement('div');
       d.style.position='fixed'; d.style.width='8px'; d.style.height='8px'; d.style.borderRadius='2px';
       d.style.left = Math.random()*100+'%'; d.style.top = '0px';
-      d.style.background = colors[(Math.random()*colors.length)|0];
+      d.style.background = CONFETTI_COLORS[(Math.random()*CONFETTI_COLORS.length)|0];
       d.style.opacity = '0.9'; d.style.transform = `translateY(0px)`;
       root.appendChild(d);
       const toY = window.innerHeight + 40 + Math.random()*200;
@@ -73,13 +60,15 @@ function CelebrationCard({ total, correct, onNewQuiz }:{ total:number; correct:n
   const pct = Math.round((correct/Math.max(1,total))*100);
   const msg = pct === 100 ? 'Perfect! 🎉' : pct >= 80 ? 'Great job! 🎊' : pct >= 50 ? 'Nice work! 👍' : 'Good effort! 💪 Keep practicing';
   return (
-    <div style={{ ...ui.card, marginTop: 16, textAlign:'center' as const }}>
-      <h3 style={{ marginTop: 0 }}>Quiz Finished</h3>
-      <div style={{ fontSize: 18, marginBottom: 6 }}>{msg}</div>
-      <div style={{ color:'#374151', marginBottom: 12 }}>Your score: <b>{correct}</b> / {total} ({pct}%)</div>
-      <div style={{ display:'flex', justifyContent:'center', gap:8 }}>
-        <button style={{ ...ui.btn }} onClick={()=>window?.location?.reload()}>Review Again</button>
-        <button style={{ ...ui.btn, ...ui.primary }} onClick={onNewQuiz}>New Quiz</button>
+    <div className="mt-4 rounded-xl bg-card p-4 text-center ring-1 ring-foreground/10">
+      <h3 className="font-display text-xl text-ink">Quiz Finished</h3>
+      <div className="mb-1.5 mt-2 text-lg text-ink">{msg}</div>
+      <div className="mb-3 text-muted-foreground">
+        Your score: <b className="text-ink">{correct}</b> / {total} ({pct}%)
+      </div>
+      <div className="flex justify-center gap-2">
+        <Button variant="outline" onClick={()=>window?.location?.reload()}>Review Again</Button>
+        <Button onClick={onNewQuiz}>New Quiz</Button>
       </div>
     </div>
   );
@@ -93,10 +82,8 @@ export default function TestPage() {
   const [loading, setLoading] = useState(true);
   const [quizKey, setQuizKey] = useState(0);
 
-  const router = useRouter();
-
     const buildQuiz = (data: Letter[]) => {
-        const pool = shuffle(data).slice(0, Math.min(10, data.length)); // <-- The fix is here
+        const pool = shuffle(data).slice(0, Math.min(10, data.length));
         const qs: Question[] = [];
         for (const l of pool) {
             const opts1 = shuffle([l.name, ...shuffle(data.filter(x => x.id !== l.id)).slice(0, 3).map(x => x.name)]).slice(0, 4);
@@ -162,23 +149,23 @@ export default function TestPage() {
   };
 
   return (
-    <div style={ui.page as React.CSSProperties}>
-      <h1 style={ui.header}>Arabic Test Mode</h1>
-      <p style={ui.sub}>Mixed quiz: identification, audio, forms, and tracing. Progress {progress.current}/{progress.total} • Build v-test-2025-09-05-12:10</p>
+    <main className="mx-auto max-w-3xl px-4 pt-12 pb-24">
+      <PageNav />
+      <h1 className="text-center font-display text-2xl text-ink">Test Mode</h1>
+      <p className="mb-8 text-center text-sm text-muted-foreground">
+        Mixed quiz: identification, audio, forms, and tracing. Progress {progress.current}/{progress.total}
+      </p>
 
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 12, gap: 8 }}>
-        <button onClick={() => router.push('/')} style={{ ...ui.btn }}>Home</button>
-        <button onClick={() => router.push('/flashLearning')} style={{ ...ui.btn }}>Flashcards</button>
-        <button onClick={() => router.push('/drawingPractice')} style={{ ...ui.btn }}>Drawing Practice</button>
-      </div>
-
-      {loading && <div>Loading...</div>}
-      {!loading && questions.length === 0 && <div>No questions available.</div>}
+      {loading && <div className="text-center text-muted-foreground">Loading...</div>}
+      {!loading && questions.length === 0 && <div className="text-center text-muted-foreground">No questions available.</div>}
 
       {!loading && current && (
-        <div key={quizKey} style={{ ...ui.card, maxWidth: 860, margin: "0 auto" }}>
-          <div style={{ height: 8, background:'#f3f4f6', borderRadius: 999, overflow:'hidden', marginBottom:12 }}>
-            <div style={{ width: `${Math.max(1, Math.round((progress.current-1)/Math.max(1,progress.total)*100))}%`, height:'100%', background:'#60a5fa' }} />
+        <div key={quizKey} className="mx-auto max-w-2xl rounded-xl bg-card p-4 ring-1 ring-foreground/10">
+          <div className="mb-3 h-2 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full bg-vermillion transition-[width]"
+              style={{ width: `${Math.max(1, Math.round((progress.current-1)/Math.max(1,progress.total)*100))}%` }}
+            />
           </div>
           <QuestionRenderer
             q={current}
@@ -186,9 +173,9 @@ export default function TestPage() {
             onAnswerMcq={answerMcq}
             onAnswerWrite={answerWrite}
           />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
-            <button onClick={goPrev} disabled={index === 0} style={ui.btn}>Previous</button>
-            <button onClick={goNext} disabled={index === questions.length - 1} style={{ ...ui.btn, ...ui.primary }}>Next</button>
+          <div className="mt-3 flex justify-between">
+            <Button variant="outline" onClick={goPrev} disabled={index === 0}>Previous</Button>
+            <Button onClick={goNext} disabled={index === questions.length - 1}>Next</Button>
           </div>
         </div>
       )}
@@ -196,7 +183,7 @@ export default function TestPage() {
       {!loading && submitted && (
         <CelebrationCard key={`celebrate-${quizKey}`} total={questions.length} correct={totalCorrect} onNewQuiz={startNewQuiz} />
       )}
-    </div>
+    </main>
   );
 }
 
@@ -227,23 +214,32 @@ function QuestionRenderer({ q, given, onAnswerMcq, onAnswerWrite }:{ q: Question
   }
 }
 
+function optionClasses(state: "idle" | "correct" | "wrong") {
+  return cn(
+    "w-full min-h-10 rounded-lg border px-3 py-2 text-left transition-colors",
+    state === "idle" && "border-foreground/10 bg-muted text-ink",
+    state === "correct" && "border-gold/50 bg-gold/15 text-gold",
+    state === "wrong" && "border-vermillion/50 bg-vermillion/15 text-vermillion"
+  );
+}
+
 function Mcq({ prompt, options, answer, given, onSelect, bigFont }:{ prompt: string; options: string[]; answer: string; given?: { correct: boolean; value?: string }; onSelect: (v:string)=>void; bigFont?: boolean }){
   return (
     <div>
-      <div style={{ fontSize: "1.05rem", color: "#333", marginBottom: 10 }}>{prompt}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
+      <div className="mb-2.5 text-ink">{prompt}</div>
+      <div className="grid grid-cols-1 gap-2">
         {options.map(opt => {
           const isChosen = given?.value === opt;
           const state = given ? (opt === answer ? "correct" : (isChosen ? "wrong" : "idle")) : "idle";
           return (
-            <button key={opt} disabled={!!given} style={ui.option(isChosen || state!=='idle', state as any)} onClick={()=>onSelect(opt)}>
-              <span style={{ fontSize: bigFont ? '1.6rem' : '.95rem' }}>{opt}</span>
+            <button key={opt} disabled={!!given} className={optionClasses(state as any)} onClick={()=>onSelect(opt)}>
+              <span className={cn(bigFont ? "font-arabic text-2xl" : "text-sm")}>{opt}</span>
             </button>
           );
         })}
       </div>
       {given && (
-        <div style={{ marginTop: 8, color: given.correct ? '#1b5e20' : '#7f1d1d' }}>
+        <div className={cn("mt-2 text-sm", given.correct ? "text-gold" : "text-vermillion")}>
           {given.correct ? 'Correct!' : `Answer: ${answer}`}
         </div>
       )}
@@ -255,23 +251,23 @@ function AudioMcq({ audioUrl, options, answer, given, onSelect }:{ audioUrl: str
   const [audio] = useState<HTMLAudioElement | null>(typeof window !== 'undefined' ? new Audio(audioUrl) : null);
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-        <button onClick={()=>audio?.play()} style={{ ...ui.btn, ...ui.primary }}>Play</button>
-        <span style={{ color: '#444' }}>Listen and choose the correct name</span>
+      <div className="mb-2.5 flex items-center gap-2.5">
+        <Button size="sm" onClick={()=>audio?.play()}>Play</Button>
+        <span className="text-sm text-muted-foreground">Listen and choose the correct name</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
+      <div className="grid grid-cols-1 gap-2">
         {options.map(opt => {
           const isChosen = given?.value === opt;
           const state = given ? (opt === answer ? "correct" : (isChosen ? "wrong" : "idle")) : "idle";
           return (
-            <button key={opt} disabled={!!given} style={ui.option(isChosen || state!=='idle', state as any)} onClick={()=>onSelect(opt)}>
+            <button key={opt} disabled={!!given} className={optionClasses(state as any)} onClick={()=>onSelect(opt)}>
               {opt}
             </button>
           );
         })}
       </div>
       {given && (
-        <div style={{ marginTop: 8, color: given.correct ? '#1b5e20' : '#7f1d1d' }}>
+        <div className={cn("mt-2 text-sm", given.correct ? "text-gold" : "text-vermillion")}>
           {given.correct ? 'Correct!' : `Answer: ${answer}`}
         </div>
       )}
@@ -280,20 +276,16 @@ function AudioMcq({ audioUrl, options, answer, given, onSelect }:{ audioUrl: str
 }
 
 function WriteTask({ prompt, glyph, given, onScored }:{ prompt: string; glyph: string; given?: { score?: number }; onScored: (s:number)=>void }){
-  const [done, setDone] = useState(false);
   const [score, setScore] = useState<number | null>(given?.score ?? null);
-
-  useEffect(() => {
-  }, []);
 
   return (
     <div>
-      <div style={{ marginBottom: 8 }}>{prompt}</div>
-      <div style={{ position: 'relative', width: '100%', height: 240, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
-        <SimpleTrace glyph={glyph} onFinish={(s)=>{ setScore(s); onScored(s); setDone(true); }} />
+      <div className="mb-2 text-ink">{prompt}</div>
+      <div className="relative h-60 w-full overflow-hidden rounded-lg bg-card">
+        <SimpleTrace glyph={glyph} onFinish={(s)=>{ setScore(s); onScored(s); }} />
       </div>
       {score !== null && (
-        <div style={{ marginTop: 8 }}>Trace score: {(score*100).toFixed(0)}%</div>
+        <div className="mt-2 text-sm text-muted-foreground">Trace score: {(score*100).toFixed(0)}%</div>
       )}
     </div>
   );
@@ -313,10 +305,10 @@ function SimpleTrace({ glyph, onFinish }:{ glyph: string; onFinish: (score:numbe
     const rect = canvas.getBoundingClientRect();
     ctx.clearRect(0,0,rect.width,rect.height);
     ctx.save();
-    ctx.globalAlpha = 0.12; ctx.fillStyle = '#000';
+    ctx.globalAlpha = 0.18; ctx.fillStyle = '#1b2130';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const fs = Math.min(rect.width, rect.height) * 0.7;
-    ctx.font = `${fs}px system-ui, -apple-system, Segoe UI, Arial, Noto Sans Arabic, sans-serif`;
+    ctx.font = `${fs}px Amiri, system-ui, -apple-system, Segoe UI, Arial, Noto Sans Arabic, sans-serif`;
     ctx.fillText(glyph, rect.width*0.55, rect.height*0.55);
     ctx.restore();
   }, [glyph]);
@@ -338,6 +330,7 @@ function SimpleTrace({ glyph, onFinish }:{ glyph: string; onFinish: (score:numbe
     resize();
     const ro =  (window as any).ResizeObserver ? new ResizeObserver(() => resize()) : null;
     if (ro && containerRef.current) ro.observe(containerRef.current);
+    document.fonts?.ready.then(() => resize());
     return () => { if (ro && containerRef.current) ro.unobserve(containerRef.current!); };
   }, [resize]);
 
@@ -349,7 +342,7 @@ function SimpleTrace({ glyph, onFinish }:{ glyph: string; onFinish: (score:numbe
     const onMove = (e: PointerEvent) => {
       if (!isDownRef.current) return; e.preventDefault();
       const to = { x: e.offsetX, y: e.offsetY }; const from = lastRef.current || to;
-      ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 10;
+      ctx.strokeStyle = '#b33a2e'; ctx.lineWidth = 10;
       ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y); ctx.stroke();
       lastRef.current = to;
       try {
@@ -372,11 +365,17 @@ function SimpleTrace({ glyph, onFinish }:{ glyph: string; onFinish: (score:numbe
   }, [drawGuide, glyph]);
 
   return (
-    <div ref={containerRef} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
-      <canvas ref={canvasRef} style={{ flex: 1, width: '100%', height: '100%', touchAction: 'none' as any }} />
-      <div style={{ display: 'flex', gap: 8, padding: 8, borderTop: '1px solid #eee', background: '#fafafa' }}>
-        <button onClick={()=>{ const c = canvasRef.current; const ctx = ctxRef.current; if(!c || !ctx) return; const rect = c.getBoundingClientRect(); ctx.clearRect(0,0,rect.width,rect.height); drawGuide(); setCoverage(0); onFinish(0); }} style={ui.btn}>Clear</button>
-        <button onClick={()=>onFinish(coverage)} style={{ ...ui.btn, ...ui.primary }}>Finish</button>
+    <div ref={containerRef} className="absolute inset-0 flex flex-col">
+      <canvas ref={canvasRef} className="flex-1 w-full h-full touch-none" />
+      <div className="flex gap-2 border-t border-foreground/10 bg-muted p-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={()=>{ const c = canvasRef.current; const ctx = ctxRef.current; if(!c || !ctx) return; const rect = c.getBoundingClientRect(); ctx.clearRect(0,0,rect.width,rect.height); drawGuide(); setCoverage(0); onFinish(0); }}
+        >
+          Clear
+        </Button>
+        <Button size="sm" onClick={()=>onFinish(coverage)}>Finish</Button>
       </div>
     </div>
   );

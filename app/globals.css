@@ -1,26 +1,191 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+  --font-arabic: var(--font-arabic);
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --color-parchment: var(--parchment);
+  --color-ink: var(--ink);
+  --color-vermillion: var(--vermillion);
+  --color-gold: var(--gold);
+  --color-wash: var(--wash);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Alim palette — parchment and ink.
+ * A manuscript page: warm parchment ground, dark ink text, a single
+ * vermillion accent (the scribe's correction red doubles as the brand
+ * accent — historically the same ink). Single theme by design.
+ */
+:root {
+  --parchment: #ede6d6;
+  --ink: #1b2130;
+  --vermillion: #b33a2e;
+  --gold: #8a6a2a;
+  --wash: #756f5e;
+
+  --background: var(--parchment);
+  --foreground: var(--ink);
+  --card: #e4dbc5;
+  --card-foreground: var(--ink);
+  --popover: #e4dbc5;
+  --popover-foreground: var(--ink);
+  --primary: var(--vermillion);
+  --primary-foreground: #f7f1e4;
+  --secondary: var(--gold);
+  --secondary-foreground: #f7f1e4;
+  --muted: #ded3b9;
+  --muted-foreground: var(--wash);
+  --accent: #ded3b9;
+  --accent-foreground: var(--ink);
+  --destructive: var(--vermillion);
+  --destructive-foreground: #f7f1e4;
+  --border: rgba(27, 33, 48, 0.14);
+  --input: rgba(27, 33, 48, 0.18);
+  --ring: var(--vermillion);
+  --chart-1: var(--vermillion);
+  --chart-2: var(--gold);
+  --chart-3: var(--wash);
+  --chart-4: #4a4536;
+  --chart-5: var(--ink);
+  --radius: 0.5rem;
+  --sidebar: #e4dbc5;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--vermillion);
+  --sidebar-primary-foreground: #f7f1e4;
+  --sidebar-accent: #ded3b9;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: rgba(27, 33, 48, 0.14);
+  --sidebar-ring: var(--vermillion);
+}
+
+.dark {
+  --background: var(--parchment);
+  --foreground: var(--ink);
+  --card: #e4dbc5;
+  --card-foreground: var(--ink);
+  --popover: #e4dbc5;
+  --popover-foreground: var(--ink);
+  --primary: var(--vermillion);
+  --primary-foreground: #f7f1e4;
+  --secondary: var(--gold);
+  --secondary-foreground: #f7f1e4;
+  --muted: #ded3b9;
+  --muted-foreground: var(--wash);
+  --accent: #ded3b9;
+  --accent-foreground: var(--ink);
+  --destructive: var(--vermillion);
+  --destructive-foreground: #f7f1e4;
+  --border: rgba(27, 33, 48, 0.14);
+  --input: rgba(27, 33, 48, 0.18);
+  --ring: var(--vermillion);
+  --chart-1: var(--vermillion);
+  --chart-2: var(--gold);
+  --chart-3: var(--wash);
+  --chart-4: #4a4536;
+  --chart-5: var(--ink);
+  --sidebar: #e4dbc5;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--vermillion);
+  --sidebar-primary-foreground: #f7f1e4;
+  --sidebar-accent: #ded3b9;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: rgba(27, 33, 48, 0.14);
+  --sidebar-ring: var(--vermillion);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.font-arabic {
+  font-family: var(--font-arabic), serif;
+}
+
+/* Signature hero moment: a real glyph outline (see lib/glyphs.ts) draws
+   itself in pen-first, then the ink fills in. pathLength="1" normalizes
+   dasharray/dashoffset math regardless of the glyph's actual geometry.
+   The path has two subpaths in one contour (stem, then hamza) so a single
+   dashoffset sweep naturally draws the stem before the hamza flourish.
+   Fully drawn by default; only animated without a reduced-motion request. */
+.stroke-draw-glyph {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  fill-opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stroke-draw-glyph {
+    stroke-dashoffset: 1;
+    fill-opacity: 0;
+    animation:
+      draw-stroke 1.3s cubic-bezier(0.65, 0, 0.35, 1) forwards,
+      ink-fill 0.5s ease-in forwards;
+    animation-delay: 0s, 1s;
+  }
+}
+
+@keyframes draw-stroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ink-fill {
+  to {
+    fill-opacity: 1;
+  }
 }
